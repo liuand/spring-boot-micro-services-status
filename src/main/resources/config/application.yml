@@ -1,0 +1,59 @@
+server:
+  port: 0
+
+info:
+  compoment: Poop Reporter App
+
+spring:
+  thymeleaf.check-template-location: false
+  cloud.config.enabled: false
+
+poop:
+  reporter:
+    initialDelay: 20000
+    rate: 15000
+    slack:
+      webHookUrl: https://hooks.slack.com/services/???
+      username: poop-reporter
+      iconEmoji: ":poop:"
+      channel: "#general"
+    lifecycle:
+      enable: true
+      helloMessages:
+        - "Hello! I am  your reporter. :bowtie:"
+        - "Hello! I am here to report status of your micro :poop: architecture."
+        - "Hi! I will report your :poop: services status."
+      goodbyeMessages:
+        - Bye! Time to poop for myself!
+        - I need to be flushed. I'll be back when you will have filled the paper toilet!
+        - Okay, no kidding. The poop-reporter stopped.
+        - Are you flushing me? I quit
+    dirty:
+      enable: true
+      initialDelay: 600000 # 10 minutes
+      delay: 1800000 # 30 minutes
+      messages:
+        - Flush me if you can.
+        - I need more toilet paper.
+        - Seriously, this is some serious shit.
+        - Oops, I pooped again!
+        - I ate spicy food.
+        - Flush me, I am famous
+        - I would like my poop harder.
+        - "I just made a fart. :musical_score:"
+        - I am a bad ass!
+        - Damnit. I got shit on me.
+        - "Don't make eye contact while I poop! :eyes:"
+        - I think I have diarrhea!
+        - "Who wants a pic of my poop? :camera:"
+
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 20
+  client:
+    registryFetchIntervalSeconds: 20
+
+logging:
+  level:
+    org.foo.bar: TRACE
