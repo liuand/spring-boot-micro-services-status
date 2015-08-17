@@ -8,40 +8,39 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-@Configuration
+@Service
 @ConditionalOnProperty(prefix = "poop.reporter.dirty", name = "enable", matchIfMissing = true)
 @EnableScheduling
 public class DirtyTalkTask {
 
-    private static final Random RANDOM = new Random();
-
-    @Autowired
     private SlackClient client;
+    private ShuffleSequence messagesSequence;
 
     @Autowired
-    private DirtyTalkProperties properties;
+    public DirtyTalkTask(SlackClient client, DirtyTalkProperties properties) {
+        this.client = client;
+        this.messagesSequence = new ShuffleSequence(properties.getMessages());
+    }
 
     @Scheduled(initialDelayString = "${poop.reporter.dirty.initialDelay:20000}", fixedDelayString = "${poop.reporter.dirty.delay:1800000}")
     public void dirtyTalk() {
-        if (!CollectionUtils.isEmpty(properties.getMessages())) {
+        if (!messagesSequence.isEmpty()) {
             doDirtyTak();
         }
     }
 
     private void doDirtyTak() {
         log.debug("Let's do dirty talk!");
-        List<String> messages = properties.getMessages();
 
-        int index = RANDOM.nextInt(messages.size());
-        String message = messages.get(index);
-
-        client.postSimpleMessage(message);
+        client.postSimpleMessage(messagesSequence.getNext());
     }
 
     @Data
@@ -49,5 +48,29 @@ public class DirtyTalkTask {
     @ConfigurationProperties(prefix = "poop.reporter.dirty")
     static class DirtyTalkProperties {
         private List<String> messages;
+    }
+
+    static class ShuffleSequence {
+        private AtomicInteger index = new AtomicInteger(0);
+        private List<String> messages;
+
+        public ShuffleSequence(List<String> messages) {
+            Collections.shuffle(messages);
+
+            this.messages = messages;
+        }
+
+        public String getNext() {
+            if (index.get() == messages.size()) {
+                index.set(0);
+                Collections.shuffle(messages);
+            }
+
+            return messages.get(index.getAndIncrement());
+        }
+
+        public boolean isEmpty() {
+            return CollectionUtils.isEmpty(messages);
+        }
     }
 }
