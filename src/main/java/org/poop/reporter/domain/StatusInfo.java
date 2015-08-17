@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 
 @AllArgsConstructor(staticName = "of")
@@ -16,6 +17,14 @@ import static java.lang.System.currentTimeMillis;
 public class StatusInfo implements Serializable {
     private Status status;
     private long timestamp;
+
+    public String getName() {
+        return format("Status is %s", status.name());
+    }
+
+    public String getColor() {
+        return status.getColor();
+    }
 
     public static StatusInfo up() {
         return of(Status.UP);

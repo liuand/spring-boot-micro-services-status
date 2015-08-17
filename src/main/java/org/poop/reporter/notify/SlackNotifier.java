@@ -3,28 +3,27 @@ package org.poop.reporter.notify;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.poop.reporter.domain.Application;
-import org.poop.reporter.domain.Status;
-import org.poop.reporter.status.ApplicationStatusChangedEvent;
+import org.poop.reporter.status.ApplicationsStatusChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import static java.lang.String.format;
+import java.util.List;
 
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 @Service
-public class SlackNotifier implements ApplicationListener<ApplicationStatusChangedEvent> {
+public class SlackNotifier implements ApplicationListener<ApplicationsStatusChangedEvent> {
 
     private SlackClient client;
 
     @Override
-    public void onApplicationEvent(ApplicationStatusChangedEvent event) {
+    public void onApplicationEvent(ApplicationsStatusChangedEvent event) {
         log.info("Receive app status changed event: {}", event);
 
-        Application app = event.getApplication();
-        Status newStatus = event.getNewStatus();
+        List<Application> apps = event.getApplications();
+        AttachmentMessage attachmentMessage = new AttachmentMessage(apps);
 
-        client.postAttachedMessage(format("Status is %s", newStatus.name()), app.getName(), app.getHealthStatusUrl(), newStatus.getColor());
+        client.postAttachmentMessage(attachmentMessage);
     }
 }

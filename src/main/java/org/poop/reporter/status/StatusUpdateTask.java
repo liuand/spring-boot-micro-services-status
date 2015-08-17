@@ -12,6 +12,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
+
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 @EnableScheduling
@@ -26,29 +31,41 @@ public class StatusUpdateTask {
     public void updateForAllApplications() {
         log.debug("Check status for applications");
 
-        mapStore.findAll().stream()
-                .forEach(this::updateApplication);
+        List<Application> appsWithNewStatus = mapStore.findAll().stream()
+            .map(this::getMaybeNewStatusApplication)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(toList());
+
+        sendEvent(appsWithNewStatus);
     }
 
-    private void updateApplication(Application originalApp) {
+    private Optional<Application> getMaybeNewStatusApplication(Application originalApp) {
         log.trace("Check for {}", originalApp);
 
         StatusInfo oldStatus = originalApp.getStatusInfo();
         StatusInfo newStatus = statusInfo.getStatusInfo(originalApp);
-        if (!newStatus.equals(oldStatus)) {
-            log.info("App has changed status: {} -> {}", oldStatus, newStatus);
-            Application appRefreshed = Application.builder()
-                    .name(originalApp.getName())
-                    .uri(originalApp.getUri())
-                    .statusPageUrl(originalApp.getStatusPageUrl())
-                    .healthStatusUrl(originalApp.getHealthStatusUrl())
-                    .statusInfo(newStatus)
-                    .build();
-            mapStore.put(appRefreshed);
+        if (newStatus.equals(oldStatus)) {
+            return Optional.empty();
+        }
 
-            ApplicationStatusChangedEvent applicationStatusChangedEvent = new ApplicationStatusChangedEvent(this, appRefreshed,
-                    oldStatus, newStatus);
-            eventPublisher.publishEvent(applicationStatusChangedEvent);
+        log.info("App has changed status: {} -> {}", oldStatus, newStatus);
+        Application appRefreshed = Application.builder()
+            .name(originalApp.getName())
+            .uri(originalApp.getUri())
+            .statusPageUrl(originalApp.getStatusPageUrl())
+            .healthStatusUrl(originalApp.getHealthStatusUrl())
+            .statusInfo(newStatus)
+            .build();
+        mapStore.put(appRefreshed);
+
+        return Optional.of(appRefreshed);
+    }
+
+    private void sendEvent(List<Application> appsWithNewStatus) {
+        if (!appsWithNewStatus.isEmpty()) {
+            ApplicationsStatusChangedEvent applicationsStatusChangedEvent = new ApplicationsStatusChangedEvent(this, appsWithNewStatus);
+            eventPublisher.publishEvent(applicationsStatusChangedEvent);
         }
     }
 

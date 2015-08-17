@@ -19,13 +19,16 @@ public class SlackClient {
         log.trace("Posting text={} with config={}", text, properties);
         BasicMessage message = new BasicMessage(properties, text);
 
-        template.postForObject(properties.getWebHookUrl(), message, String.class);
+        postMessage(message);
     }
 
-    public void postAttachedMessage(String text, String title, String titleLink, String color) {
-        AttachmentMessage attachmentMessage = new AttachmentMessage(properties, text, title, titleLink, color);
+    public void postAttachmentMessage(AttachmentMessage attachmentMessage) {
+        log.trace("Posting attachmnent message={}", attachmentMessage);
 
-        template.postForObject(properties.getWebHookUrl(), attachmentMessage, String.class);
+        postMessage(attachmentMessage);
+    }
 
+    private void postMessage(Object object) {
+        template.postForObject(properties.getWebHookUrl(), object, String.class);
     }
 }
