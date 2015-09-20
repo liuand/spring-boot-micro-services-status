@@ -11,12 +11,12 @@ The stack is quite simple:
 
 == Micro services architecture
 
-You migrate a big monolithic app to a micro services architecture. You use spring-cloud netfilx stack and the eureka service.
-You should use the poop-reporter to be notified when an app status changes.
+You migrate a big monolithic app to a micro services architecture. You use spring-cloud netflix stack and the eureka service.
+You should use the microservices-reporter to be notified when an app status changes.
 
 TODO: add image with message example
 
-== Why poop-reporter?
+== Why this project?
 
 You dealt with a big monolith app. Let's call it a big poop.
 Now, with a micro services architecture, you have to deal with a lot of apps - a lot of poops.
@@ -29,4 +29,4 @@ TODO: add configuration details
 
 == Usage
 
-Just run the spring-boot app using `mvn spring-boot:run` or the `PoopReporterApp#main` method.
+Just run the spring-boot app using `mvn spring-boot:run` or the `MicroServicesReporterApp#main` method.
