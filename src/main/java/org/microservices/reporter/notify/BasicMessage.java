@@ -2,21 +2,20 @@ package org.microservices.reporter.notify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-public class BasicMessage {
-    private String channel = "#general";
-    private String username = "microservices-reporter";
-    private String text = "Hello world!";
+public class BasicMessage implements SlackWebhook {
+    private String channel;
+    private String username;
+    private String text;
     @JsonProperty("icon_emoji")
-    private String iconEmoji = ":poop:";
-
-    public BasicMessage() {
-    }
+    private String iconEmoji;
 
     public BasicMessage(SlackProperties slackProperties, String text) {
         this.channel = slackProperties.getChannel();

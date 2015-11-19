@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ToString
 public class SlackProperties {
     private String webHookUrl;
-    private String channel = "#general";
+    private String channel = "#bot";
     private String userName = "poop-reporter";
     private String iconEmoji = ":poop:";
 }

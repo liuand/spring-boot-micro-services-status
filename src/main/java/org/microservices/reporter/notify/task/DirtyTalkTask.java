@@ -1,7 +1,8 @@
-package org.microservices.reporter.notify;
+package org.microservices.reporter.notify.task;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.microservices.reporter.notify.SlackClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;

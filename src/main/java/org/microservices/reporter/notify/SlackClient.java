@@ -1,19 +1,22 @@
 package org.microservices.reporter.notify;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.microservices.reporter.domain.Application;
 import org.microservices.reporter.web.rest.JacksonRestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Slf4j
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 @Service
 public class SlackClient {
-
-    @Autowired
     private SlackProperties properties;
 
-    private RestTemplate template = new JacksonRestTemplate();
+    private final RestTemplate template = new JacksonRestTemplate();
 
     public void postSimpleMessage(String text) {
         log.trace("Posting text={} with config={}", text, properties);
@@ -22,13 +25,14 @@ public class SlackClient {
         postMessage(message);
     }
 
-    public void postAttachmentMessage(AttachmentMessage attachmentMessage) {
+    public void postAttachmentMessage(List<Application> apps) {
+        AttachmentMessage attachmentMessage = new AttachmentMessage(properties, apps);
         log.trace("Posting attachmnent message={}", attachmentMessage);
 
         postMessage(attachmentMessage);
     }
 
-    private void postMessage(Object object) {
-        template.postForObject(properties.getWebHookUrl(), object, String.class);
+    private void postMessage(SlackWebhook slackWebhook) {
+        template.postForObject(properties.getWebHookUrl(), slackWebhook, String.class);
     }
 }

@@ -14,15 +14,12 @@ import static java.util.stream.Collectors.toList;
 
 @Getter
 @ToString
-public class AttachmentMessage extends BasicMessage {
+public class AttachmentMessage extends BasicMessage{
+
     private List<Attachment> attachments = new ArrayList<>();
 
-    public AttachmentMessage() {
-        setText(null);
-    }
-
-    public AttachmentMessage(List<Application> apps) {
-        this();
+    public AttachmentMessage(SlackProperties properties, List<Application> apps) {
+        super(properties, null);
 
         List<AttachmentMessage.Attachment> attachments = apps.stream()
             .map(AttachmentMessage.Attachment::new)

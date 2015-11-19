@@ -22,8 +22,7 @@ public class SlackNotifier implements ApplicationListener<ApplicationsStatusChan
         log.info("Receive app status changed event: {}", event);
 
         List<Application> apps = event.getApplications();
-        AttachmentMessage attachmentMessage = new AttachmentMessage(apps);
 
-        client.postAttachmentMessage(attachmentMessage);
+        client.postAttachmentMessage(apps);
     }
 }
