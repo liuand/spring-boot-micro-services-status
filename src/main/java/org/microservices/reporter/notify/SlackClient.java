@@ -6,6 +6,7 @@ import org.microservices.reporter.domain.Application;
 import org.microservices.reporter.web.rest.JacksonRestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -33,6 +34,10 @@ public class SlackClient {
     }
 
     private void postMessage(SlackWebhook slackWebhook) {
-        template.postForObject(properties.getWebHookUrl(), slackWebhook, String.class);
+        try {
+            template.postForObject(properties.getWebHookUrl(), slackWebhook, String.class);
+        } catch (RestClientException e) {
+            log.error("Failed to send the webhook message: {}", slackWebhook, e);
+        }
     }
 }
