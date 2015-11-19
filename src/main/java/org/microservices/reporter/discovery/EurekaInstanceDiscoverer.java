@@ -1,7 +1,7 @@
 package org.microservices.reporter.discovery;
 
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class EurekaInstanceDiscoverer {
 
-    private DiscoveryClient discoveryClient;
+    private EurekaClient discoveryClient;
     private ServiceRegistry registry;
 
     public void discover() {
